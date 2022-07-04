@@ -4,7 +4,7 @@
     "roots": ["<rootDir>/src", "<rootDir>/tests"],
     "collectCoverageFrom": ["**/*.(t|j)s"],
     "moduleDirectories": ["src", "node_modules"],
-    "testRegex": "tests/[^_].+e2e-spec.ts$",
+    "testRegex": "tests/_reports.e2e-spec.ts$",
     "transform": {
         "^.+\\.(t|j)s$": "ts-jest"
     },
