@@ -13,10 +13,9 @@ export class ReportsController {
     constructor(private readonly reportsService: ReportsService) {}
 
     @Post()
-    @Roles(RolesEnum.VERIFIED)
     @ApiOperation({ summary: 'Create a report' })
-    @ApiBody({ type: ReportDto, description: 'The newly created report', required: true })
-    createReport(@Body() body: CreateReportDto): Promise<ReportDto> {
+    @ApiOkResponse({ type: ReportDto, description: 'The newly created report' })
+    createReport(@LoggedInUser('id') submitter: number, @Body() body: CreateReportDto): Promise<ReportDto> {
         return this.reportsService.insert(body)
     }
 }
