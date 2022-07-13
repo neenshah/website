@@ -15,7 +15,7 @@ export class ReportsController {
     @Post()
     @ApiOperation({ summary: 'Create a report' })
     @ApiOkResponse({ type: ReportDto, description: 'The newly created report' })
-    createReport(@LoggedInUser('id') submitter: number, @Body() body: CreateReportDto): Promise<ReportDto> {
-        return this.reportsService.insert(body)
+    createReport(/*@LoggedInUser('id') userID: number, */@Body() body: CreateReportDto): Promise<ReportDto> {
+        return this.reportsService.createReport(body)
     }
 }

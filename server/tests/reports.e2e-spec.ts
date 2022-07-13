@@ -8,9 +8,11 @@ import { Roles } from '../src/@common/enums/user.enum';
 import { ReportDto } from '../src/@common/dto/report/report.dto';
 import { MapType } from '../src/@common/enums/map.enum';
 import { post } from './testutil';
+import { User } from '@prisma/client';
+import { exponentialBuckets } from 'prom-client';
 
 describe('reports', () => {
-    let user1, user2, user2Token, testMap, report;
+    let user1, user2, testMap;
 
     beforeEach(async () => {
         const prisma: PrismaService = global.prisma;
@@ -53,7 +55,7 @@ describe('reports', () => {
 
         const authService = global.auth as AuthService;
         global.accessToken = (await authService.login(user1)).access_token;
-        user2Token = (await authService.login(user2)).access_token;
+        //user2Token = (await authService.login(user2)).access_token;
     });
 
     afterEach(async () => {
@@ -61,7 +63,7 @@ describe('reports', () => {
 
         await prisma.user.deleteMany({ where: { id: { in: [user1.id, user2.id] } } });
         await prisma.map.deleteMany({ where: { id: { in: [testMap.id] } } });
-        await prisma.report.deleteMany({ where: { id: { in: [report.id] } } });
+        await prisma.report.deleteMany({ where: { submitterID: { in: [user1.id] } } });
     });
 
     describe('POST /api/v1/reports', () => {
@@ -69,14 +71,23 @@ describe('reports', () => {
 
             const res = await post('reports', 201, {
                 data: testMap.id.toString(),
-                message: "I created this map :(",
                 type: ReportType.MAP_REPORT,
                 category: ReportCategory.PLAGIARISM,
-                resolved: false,
+                message: "I created this map :(",
                 submitterID: user1.id,
             });
+
             console.log(res.body);
+
             expect(res.body).toBeValidDto(ReportDto);
+            expect(res.body.id).toBeDefined();
+            expect(res.body.data).toBe(testMap.id.toString());
+            expect(res.body.type).toBe(ReportType.MAP_REPORT);
+            expect(res.body.category).toBe(ReportCategory.PLAGIARISM);
+            expect(res.body.message).toBe("I created this map :(");
+            expect(res.body.submitterID).toBe(user1.id);
+            expect(res.body.createdAt).toBeDefined();
+            expect(res.body.updatedAt).toBeDefined();
             // await request(global.server)
             //     .post('reports')
             //     .send({

@@ -98,6 +98,6 @@ export class ReportDto implements Report {
     updatedAt: Date;
 }
 
-export class CreateReportDto extends PickType(ReportDto, ['data', 'type', 'category', 'message'] as const) {}
+export class CreateReportDto extends PickType(ReportDto, ['data', 'type', 'category', 'message', 'submitterID', 'submitter'] as const) {}
 
 export class UpdateReportDto extends PickType(ReportDto, ['resolved', 'resolutionMessage'] as const) {}
